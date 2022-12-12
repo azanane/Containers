@@ -12,7 +12,10 @@ namespace ft {
 
 		//	CONSTRUCTORS, ASSIGN OPERATOR AND DESTRUCTOR
 
-			vector( void ) : _myVector(nullptr), _availableData(0), _usedData(0) {}
+			vector( void ) : _myVector(nullptr), _availableData(0), _usedData(0) {
+
+				this->_newAlloc(2);		
+			}
 
 			vector( vector const & src ) { *this = src; }
 
@@ -20,7 +23,7 @@ namespace ft {
 
 			~vector( void ) { 
 
-				this->_myVector.deallocate(this->_myVector, this->_availableData);
+				this->_myAllocator.deallocate(this->_myVector, this->_availableData);
 			}
 
 		//	TYPEDEFS
@@ -42,6 +45,12 @@ namespace ft {
 
 		//	||-----PUBLIC FUNCTIONS-----||
 
+
+			iterator		begin() const { return iterator(this->_myVector); }
+			iterator		end() const { return iterator( this->_myVector + this->_usedData); }
+
+			// const_iterator	cbegin() const { return this->_adress; }
+			// const_iterator	cend() const { return this->_adress + this->_len; }
 
 			//	Capacity
 
@@ -73,8 +82,8 @@ namespace ft {
 			reference		back();
 			const_reference	back() const;
 
-			pointer			data() noexcept;
-			const_pointer	data() const noexcept;
+			pointer			data();
+			const_pointer	data() const;
 
 
 			//	Modifiers	
@@ -88,8 +97,8 @@ namespace ft {
 				if (this->_availableData == this->_usedData)
 					_newAlloc(this->_availableData + 1);
 
-				this->_usedData += 1;
 				this->_myVector[this->_usedData] = val;
+				this->_usedData += 1;
 			}
 
 			void	pop_back() {
@@ -124,8 +133,8 @@ namespace ft {
 
 		private:
 
-			T*		_myVector;
-			Alloc	_myAllocator;
+			T*				_myVector;
+			allocator_type	_myAllocator;
 
 			size_t	_availableData;
 			size_t	_usedData;
@@ -138,7 +147,7 @@ namespace ft {
 
 					T*	newVector = this->_myAllocator.allocate( newSize / 2 + newSize );
 
-					for (int i = 0; i < this->_usedData; ++i) {
+					for (size_t i = 0; i < this->_usedData; ++i) {
 
 						newVector[i] = this->_myVector[i];
 					}
@@ -146,7 +155,7 @@ namespace ft {
 					if (this->_availableData > 0)
 						this->_myAllocator.deallocate( this->_myVector, this->_availableData );
 
-					this->myVector = newVector;
+					this->_myVector = newVector;
 					this->_availableData = newSize;
 				}
 			}

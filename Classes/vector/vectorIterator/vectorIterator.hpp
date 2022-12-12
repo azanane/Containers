@@ -2,6 +2,7 @@
 # define VECTORITERATOR_HPP
 
 # include <iostream>
+# define PRINT(x) std::cout << x << std::endl;
 
 namespace ft {
 
@@ -10,20 +11,22 @@ namespace ft {
 
 		public:
 
-			vectorIterator( void ) {}
+			vectorIterator() {}
+			vectorIterator( Type* adress ) : _adress(adress) {}
 			vectorIterator( vectorIterator const & src ) { *this = src; }
-			vectorIterator & operator=( vectorIterator const & rhs );
+			vectorIterator & operator=( vectorIterator const & rhs ) {
+
+				this->_adress = rhs._adress;
+				this->_inc = rhs._inc;
+				this->_len = rhs._len;
+
+				return *this;
+			}
 			~vectorIterator( void ) {}
 
 			typedef Type				value_type;
 			typedef	value_type*			pointer;
 			typedef const value_type*	const_pointer;
-
-			pointer	begin() const { return this->_adress; }
-			pointer	end() const { return this->_adress + this->_len; }
-
-			const_pointer	cbegin() const { return this->_adress; }
-			const_pointer	cend() const { return this->_adress + this->_len; }
 
 			vectorIterator &	operator++() { this->_adress += 1; return *this; }
 			vectorIterator		operator++( int ) { vectorIterator	newInstance = *this; operator++(); return newInstance; }
@@ -32,6 +35,22 @@ namespace ft {
 			vectorIterator		operator--( int ) { vectorIterator	newInstance = *this; operator--(); return newInstance; }
 
 			vectorIterator & operator[]( int const index ) const { this->_adress += index; return *this; }
+
+			bool	operator!=( vectorIterator const & compare ) {
+
+				if (this->_adress != compare._adress)
+					return true;
+				return false;
+			}
+
+			bool	operator==( vectorIterator const & compare ) {
+
+				if (this->_adress == compare._adress)
+					return true;
+				return false;
+			}
+
+			Type & operator*() const { return *(this->_adress); }
 
 		private:
 
