@@ -10,22 +10,6 @@ namespace ft {
 
 		public:
 
-		//	CONSTRUCTORS, ASSIGN OPERATOR AND DESTRUCTOR
-
-			vector( void ) : _myVector(nullptr), _availableData(0), _usedData(0) {
-
-				this->_newAlloc(2);		
-			}
-
-			vector( vector const & src ) { *this = src; }
-
-			vector & operator=( vector const & rhs );
-
-			~vector( void ) { 
-
-				this->_myAllocator.deallocate(this->_myVector, this->_availableData);
-			}
-
 		//	TYPEDEFS
 
 			typedef T					value_type;
@@ -41,6 +25,48 @@ namespace ft {
 			typedef const iterator			const_iterator;
 
 			typedef	size_t	size_type;
+	
+
+		//	CONSTRUCTORS, ASSIGN OPERATOR AND DESTRUCTOR
+
+			vector( void ) : _myVector(nullptr), _availableData(0), _usedData(0) {
+
+				this->_newAlloc(2);		
+			}
+
+			vector( size_type n, const_reference val = value_type() ) {
+
+				for (size_type i = 0; i < n; ++i) {
+
+					this->_myVector.push_back(val);
+				}
+			}
+
+			template <class InputIterator>
+         	vector( InputIterator first, InputIterator last ) {
+
+				// iterator	it;
+				for (iterator it = first; it != last; ++it) {
+
+					this->_myVector.push_back(*it);
+				}
+			}
+
+			vector( vector const & src ) { *this = src; }
+
+			vector & operator=( vector const & rhs ) {
+
+				this->_myVector = rhs.data();
+				this->_usedData = rhs.size();
+				this->_availableData = rhs.capacity();
+
+				return *this;
+			}
+
+			~vector( void ) { 
+
+				this->_myAllocator.deallocate(this->_myVector, this->_availableData);
+			}
 
 
 		//	||-----PUBLIC FUNCTIONS-----||
@@ -49,8 +75,8 @@ namespace ft {
 			iterator		begin() const { return iterator(this->_myVector); }
 			iterator		end() const { return iterator( this->_myVector + this->_usedData); }
 
-			// const_iterator	cbegin() const { return this->_adress; }
-			// const_iterator	cend() const { return this->_adress + this->_len; }
+			const_iterator	cbegin() const { return iterator(this->_myVector); }
+			const_iterator	cend() const { return iterator( this->_myVector + this->_usedData); }
 
 			//	Capacity
 
@@ -76,17 +102,17 @@ namespace ft {
 			reference 		at( size_type n );
 			const_reference	at( size_type n ) const;
 
-			reference		front();
-			const_reference	front() const;
+			reference		front() { return this->_myVector[0]; }
+			const_reference	front() const { return this->_myVector[0]; }
 
-			reference		back();
-			const_reference	back() const;
+			reference		back() { return this->_myVector[this->_usedData - 1]; }
+			const_reference	back() const { return this->_myVector[this->_usedData - 1]; }
 
-			pointer			data();
-			const_pointer	data() const;
+			pointer			data() { return this->_myVector; }
+			const_pointer	data() const { return this->_myVector; }
 
 
-			//	Modifiers	
+			//	Modifiers
 
 			template <class InputIterator>
 			void	assign( InputIterator first, InputIterator last );
@@ -111,7 +137,15 @@ namespace ft {
 			}
 
 			void	swap( vector& x );
-			void	clear();
+			void	clear() {
+
+				size_type	used = this->_usedData;
+
+				for (size_type i = 0; i < used; ++i) {
+
+					this->pop_back();
+				}
+			}
 
 			template <class InputIterator>
 			void		insert( iterator position, InputIterator first, InputIterator last );
