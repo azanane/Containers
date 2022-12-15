@@ -33,7 +33,9 @@ int	main() {
     // Prefer container.data() over &container[0]
     pointer_func(v1.data(), v1.size());
 
-
+	ft::vector<int> v2(v1.begin(), v1.end());
+	PRINT("");
+	pointer_func(v2.data(), v2.size());
 
 	return	0;
 }

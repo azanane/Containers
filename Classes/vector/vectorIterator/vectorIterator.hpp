@@ -36,7 +36,7 @@ namespace ft {
 
 			vectorIterator & operator[]( int const index ) const { this->_adress += index; return *this; }
 
-			bool	operator!=( vectorIterator const & compare ) {
+			bool	operator!=( vectorIterator const & compare ) const {
 
 				if (this->_adress != compare._adress)
 					return true;

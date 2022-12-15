@@ -2,6 +2,7 @@
 # define VECTOR_HPP
 
 # include "../vectorIterator/vectorIterator.hpp"
+# include "../../enable_if/enableIf.hpp"
 
 namespace ft {
 
@@ -29,26 +30,29 @@ namespace ft {
 
 		//	CONSTRUCTORS, ASSIGN OPERATOR AND DESTRUCTOR
 
-			vector( void ) : _myVector(nullptr), _availableData(0), _usedData(0) {
+			vector( const allocator_type& alloc = allocator_type() ) : _myVector(nullptr), _availableData(0), _usedData(0) {
 
+				this->_myAllocator = alloc;
 				this->_newAlloc(2);		
 			}
 
-			vector( size_type n, const_reference val = value_type() ) {
+			vector( size_type n, const_reference val = value_type(), const allocator_type& alloc = allocator_type() ) {
 
+				this->_myAllocator = alloc;
 				for (size_type i = 0; i < n; ++i) {
 
-					this->_myVector.push_back(val);
+					this->push_back(val);
 				}
 			}
 
 			template <class InputIterator>
-         	vector( InputIterator first, InputIterator last ) {
+         	vector( InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
+					typename ft::enable_if<!std::is_integral<InputIterator>::value >::type* = 0) {
 
-				// iterator	it;
+				this->_myAllocator = alloc;
 				for (iterator it = first; it != last; ++it) {
 
-					this->_myVector.push_back(*it);
+					this->push_back(*it);
 				}
 			}
 
@@ -59,11 +63,12 @@ namespace ft {
 				this->_myVector = rhs.data();
 				this->_usedData = rhs.size();
 				this->_availableData = rhs.capacity();
+				this->_myAllocator = rhs.get_allocator();
 
 				return *this;
 			}
 
-			~vector( void ) { 
+			~vector( void ) {
 
 				this->_myAllocator.deallocate(this->_myVector, this->_availableData);
 			}
@@ -90,8 +95,8 @@ namespace ft {
 					return true;
 				return false;
 			}
+	
 			void		reserve( size_type n );
-			void		shrink_to_fit();
 
 
 			//	Elemement acces
@@ -155,11 +160,6 @@ namespace ft {
 			iterator	erase( iterator position );
 			iterator	erase( iterator first, iterator last );
 
-			// template <class... Args>
-			// iterator emplace( const_iterator position, Args&&... args );
-			// template <class... Args>
-			// void		emplace_back( Args&&... args );
-
 			//	Allocator
 
 			allocator_type	get_allocator() const { return this->_myAllocator; }
@@ -193,25 +193,6 @@ namespace ft {
 					this->_availableData = newSize;
 				}
 			}
-
-			// void	_deAlloc( size_t newSize ) {
-
-			// 	if (newSize < this->_availableData) {
-
-			// 		if (this->_availableData > 0)
-			// 			this->_myAllocator.deallocate( this->_myVector, this->_availableData );
-
-			// 		T*	newVector = this->_myAllocator.allocate( (newSize * 2) / 3 );
-
-			// 		for (int i = 0, i < this->_usedData, ++i) {
-
-			// 			newVector[i] = this->_myVector[i];
-			// 		}
-					
-			// 		this->myVector = newVector;
-			// 		this->_availableData = newSize;
-			// 	}
-			// }
 
 	};
 }
