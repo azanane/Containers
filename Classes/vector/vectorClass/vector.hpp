@@ -2,7 +2,8 @@
 # define VECTOR_HPP
 
 # include "../vectorIterator/vectorIterator.hpp"
-# include "../../enable_if/enableIf.hpp"
+# include "../../enableIf/enableIf.hpp"
+# include "../../isIntegral/isIntegral.hpp"
 
 namespace ft {
 
@@ -33,12 +34,18 @@ namespace ft {
 			vector( const allocator_type& alloc = allocator_type() ) : _myVector(nullptr), _availableData(0), _usedData(0) {
 
 				this->_myAllocator = alloc;
+				this->_availableData = 0;
+				this->_usedData = 0;
+
 				this->_newAlloc(2);		
 			}
 
 			vector( size_type n, const_reference val = value_type(), const allocator_type& alloc = allocator_type() ) {
 
 				this->_myAllocator = alloc;
+				this->_availableData = 0;
+				this->_usedData = 0;
+
 				for (size_type i = 0; i < n; ++i) {
 
 					this->push_back(val);
@@ -47,23 +54,29 @@ namespace ft {
 
 			template <class InputIterator>
          	vector( InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-					typename ft::enable_if<!std::is_integral<InputIterator>::value >::type* = 0) {
+					typename ft::enable_if<!ft::is_integral<InputIterator>::value >::type* = 0) {
 
 				this->_myAllocator = alloc;
+				this->_availableData = 0;
+				this->_usedData = 0;
+
 				for (iterator it = first; it != last; ++it) {
 
 					this->push_back(*it);
 				}
 			}
 
-			vector( vector const & src ) { *this = src; }
+			vector( vector const & src ) { 
+				
+				this->_availableData = 0;
+				this->_usedData = 0;
+
+				*this = src;
+			}
 
 			vector & operator=( vector const & rhs ) {
 
-				this->_myVector = rhs.data();
-				this->_usedData = rhs.size();
-				this->_availableData = rhs.capacity();
-				this->_myAllocator = rhs.get_allocator();
+				assign(rhs.begin(), rhs.end());
 
 				return *this;
 			}
@@ -101,11 +114,11 @@ namespace ft {
 
 			//	Elemement acces
 
-			reference		operator[]( size_type n );
-			const_reference	operator[]( size_type n ) const;
+			reference		operator[]( size_type n ) { return this->_myVector[n]; }
+			const_reference	operator[]( size_type n ) const { return this->_myVector[n]; }
 
-			reference 		at( size_type n );
-			const_reference	at( size_type n ) const;
+			reference 		at( size_type n ) { return this->_myVector[n]; }
+			const_reference	at( size_type n ) const { return this->_myVector[n]; }
 
 			reference		front() { return this->_myVector[0]; }
 			const_reference	front() const { return this->_myVector[0]; }
@@ -120,14 +133,31 @@ namespace ft {
 			//	Modifiers
 
 			template <class InputIterator>
-			void	assign( InputIterator first, InputIterator last );
-			void 	assign( size_type n, const_reference val );
+			void	assign( InputIterator first, InputIterator last ) {
+
+				this->clear();
+
+				for (; first != last; ++first) { 
+
+					this->push_back(*first);
+				}
+			}
+
+			void 	assign( size_type n, const_reference val ) {
+
+				this->clear();
+
+				for (size_type i = 0; i < n; ++i) {
+
+					this->push_back(val);
+				}
+			}
 
 			void	push_back( const_reference val ) {
 
 				if (this->_availableData == this->_usedData)
 					_newAlloc(this->_availableData + 1);
-
+				
 				this->_myVector[this->_usedData] = val;
 				this->_usedData += 1;
 			}
@@ -137,11 +167,23 @@ namespace ft {
 				if (this->_usedData > 0) {
 
 					this->_myVector[ this->_usedData ].~T();
-					this->_usedData -=1;
+					this->_usedData -= 1;
 				}
 			}
 
-			void	swap( vector& x );
+			void	swap( vector& x ) {
+
+				iterator		tmpBegin = this->begin();
+				iterator		tmpEnd = this->end();
+
+				allocator_type	tmpMyAllocator	= this->_myAllocator;
+				size_t 			tmpAvailableData = this->_availableData;
+				size_t	 		tmpUsedData = this->_usedData;
+
+				
+				x = temp;
+			}
+
 			void	clear() {
 
 				size_type	used = this->_usedData;

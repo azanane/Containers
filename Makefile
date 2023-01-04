@@ -6,11 +6,16 @@ ERASE=\033[2K\r
 
 VPATH	=	Classes/vector/vectorClass/: \
 			Classes/vector/vectorIterator/: \
+			Classes/enableIf/: \
+			Classes/isIntegral/: \
+
 
 SRCS	=	main.cpp \
 
 HEAD	=	vector.hpp \
 			vectorIterator.hpp \
+			enableIf.hpp \
+			isIntegral.hpp \
 
 OBJS	=	$(addprefix .objects/, $(SRCS:.cpp=.o))
 
