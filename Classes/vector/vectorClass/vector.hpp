@@ -31,13 +31,15 @@ namespace ft {
 
 		//	CONSTRUCTORS, ASSIGN OPERATOR AND DESTRUCTOR
 
-			vector( const allocator_type& alloc = allocator_type() ) : _myVector(nullptr), _availableData(0), _usedData(0) {
+ 			vector( const allocator_type& alloc = allocator_type() ) : _myVector(nullptr), _availableData(0), _usedData(0) {
 
 				this->_myAllocator = alloc;
 				this->_availableData = 0;
 				this->_usedData = 0;
 
-				this->_newAlloc(2);		
+				this->_newAlloc(2);
+				this->_myIterator = iterator(_myVector);
+				this->_myIteratorEnd = iterator(_myVector);
 			}
 
 			vector( size_type n, const_reference val = value_type(), const allocator_type& alloc = allocator_type() ) {
@@ -50,6 +52,10 @@ namespace ft {
 
 					this->push_back(val);
 				}
+
+				this->_myIterator = iterator(this->_myVector);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData);
+
 			}
 
 			template <class InputIterator>
@@ -64,6 +70,9 @@ namespace ft {
 
 					this->push_back(*it);
 				}
+
+				this->_myIterator = iterator(this->_myVector);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData);
 			}
 
 			vector( vector const & src ) { 
@@ -72,11 +81,17 @@ namespace ft {
 				this->_usedData = 0;
 
 				*this = src;
+
+				this->_myIterator = iterator(this->_myVector);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData);
 			}
 
 			vector & operator=( vector const & rhs ) {
 
 				assign(rhs.begin(), rhs.end());
+
+				// this->_myIterator = rhs._myIterator;
+				// this->_myIteratorEnd = rhs._myIteratorEnd;
 
 				return *this;
 			}
@@ -90,11 +105,11 @@ namespace ft {
 		//	||-----PUBLIC FUNCTIONS-----||
 
 
-			iterator		begin() const { return iterator(this->_myVector); }
-			iterator		end() const { return iterator( this->_myVector + this->_usedData); }
+			iterator		begin() const { return this->_myIterator; }
+			iterator		end() const { return this->_myIteratorEnd; }
 
-			const_iterator	cbegin() const { return iterator(this->_myVector); }
-			const_iterator	cend() const { return iterator( this->_myVector + this->_usedData); }
+			const_iterator	cbegin() const { return this->_myIterator; }
+			const_iterator	cend() const { return this->_myIteratorEnd; }
 
 			//	Capacity
 
@@ -141,6 +156,9 @@ namespace ft {
 
 					this->push_back(*first);
 				}
+
+				// this->_myIterator = first;
+				// this->_myIteratorEnd = last;
 			}
 
 			void 	assign( size_type n, const_reference val ) {
@@ -175,13 +193,24 @@ namespace ft {
 
 				iterator		tmpBegin = this->begin();
 				iterator		tmpEnd = this->end();
-
 				allocator_type	tmpMyAllocator	= this->_myAllocator;
 				size_t 			tmpAvailableData = this->_availableData;
 				size_t	 		tmpUsedData = this->_usedData;
 
-				
-				x = temp;
+				this->_myAllocator = x._myAllocator;
+				this->_availableData = x._availableData;
+				this->_usedData = x._usedData;
+				this->_myIterator = x._myIterator;
+				this->_myIteratorEnd = x._myIteratorEnd;
+
+				x._myAllocator = tmpMyAllocator;
+				x._availableData = tmpAvailableData;
+				x._usedData = tmpUsedData;
+
+				PRINT(*x.end())
+				x._myIterator = tmpBegin;
+				x._myIteratorEnd = tmpEnd;
+				PRINT(*x.end())
 			}
 
 			void	clear() {
@@ -214,6 +243,10 @@ namespace ft {
 
 			size_t	_availableData;
 			size_t	_usedData;
+
+			iterator	_myIterator;
+			iterator	_myIteratorEnd;
+
 
 			//	||-----PRIVATE FUNCTIONS-----||
 

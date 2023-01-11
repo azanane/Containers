@@ -51,21 +51,21 @@ int	main() {
 	ft::vector<int> a1(1, 3);
 	ft::vector<int> a2(4, 5);
  
-    ft::vector<int>::iterator it1 = a1.begin();
-    ft::vector<int>::iterator it2 = a2.begin();
+    // ft::vector<int>::iterator it1 = a1.begin();
+    // ft::vector<int>::iterator it2 = a2.begin();
  
-	int& ref1 = a1.front();
-	int& ref2 = a2.front();
+	// int& ref1 = a1.front();
+	// int& ref2 = a2.front();
 
-	pointer_func(a1.data(), a1.size());
-	pointer_func(a2.data(), a2.size());
-	std::cout << *it1 << ' ' << *it2 << ' ' << ref1 << ' ' << ref2 << '\n';
+	// pointer_func(a1.data(), a1.size());
+	// pointer_func(a2.data(), a2.size());
+	// std::cout << *it1 << ' ' << *it2 << ' ' << ref1 << ' ' << ref2 << '\n';
 
 	a1.swap(a2);
 
-	pointer_func(a1.data(), a1.size());
-	pointer_func(a2.data(), a2.size());
-	std::cout << *it1 << ' ' << *it2 << ' ' << ref1 << ' ' << ref2 << '\n';
+	// pointer_func(a1.data(), a1.size());
+	// pointer_func(a2.data(), a2.size());
+	// std::cout << *it1 << ' ' << *it2 << ' ' << ref1 << ' ' << ref2 << '\n';
 
 	return 0;
 }
