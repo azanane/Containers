@@ -54,7 +54,7 @@ namespace ft {
 				}
 
 				this->_myIterator = iterator(this->_myVector);
-				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData - 1);
 
 			}
 
@@ -72,7 +72,7 @@ namespace ft {
 				}
 
 				this->_myIterator = iterator(this->_myVector);
-				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData - 1);
 			}
 
 			vector( vector const & src ) { 
@@ -90,8 +90,8 @@ namespace ft {
 
 				assign(rhs.begin(), rhs.end());
 
-				// this->_myIterator = rhs._myIterator;
-				// this->_myIteratorEnd = rhs._myIteratorEnd;
+				this->_myIterator = rhs._myIterator;
+				this->_myIteratorEnd = rhs._myIteratorEnd;
 
 				return *this;
 			}
@@ -129,8 +129,26 @@ namespace ft {
 
 			//	Elemement acces
 
-			reference		operator[]( size_type n ) { return this->_myVector[n]; }
-			const_reference	operator[]( size_type n ) const { return this->_myVector[n]; }
+			reference		operator[]( size_type n ) { 
+				
+				(void)this->_myVector[n];
+				iterator i = (this->begin()); 
+														
+				for (; n > 1; n--)
+					i++;
+				
+				return *i;
+			}
+			const_reference	operator[]( size_type n ) const { 
+
+				(void)this->_myVector[n];	
+				iterator i = (this->begin()); 
+														
+				for (; n > 1; n--)
+					i++;
+				
+				return *i;
+			}
 
 			reference 		at( size_type n ) { return this->_myVector[n]; }
 			const_reference	at( size_type n ) const { return this->_myVector[n]; }
@@ -157,8 +175,8 @@ namespace ft {
 					this->push_back(*first);
 				}
 
-				// this->_myIterator = first;
-				// this->_myIteratorEnd = last;
+				this->_myIterator = first;
+				this->_myIteratorEnd = last;
 			}
 
 			void 	assign( size_type n, const_reference val ) {
@@ -178,6 +196,9 @@ namespace ft {
 				
 				this->_myVector[this->_usedData] = val;
 				this->_usedData += 1;
+
+				this->_myIterator = iterator(this->_myVector);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData - 1);
 			}
 
 			void	pop_back() {
@@ -187,6 +208,9 @@ namespace ft {
 					this->_myVector[ this->_usedData ].~T();
 					this->_usedData -= 1;
 				}
+
+				this->_myIterator = iterator(this->_myVector);
+				this->_myIteratorEnd = iterator(this->_myVector + this->_usedData - 1);
 			}
 
 			void	swap( vector& x ) {
@@ -196,21 +220,21 @@ namespace ft {
 				allocator_type	tmpMyAllocator	= this->_myAllocator;
 				size_t 			tmpAvailableData = this->_availableData;
 				size_t	 		tmpUsedData = this->_usedData;
+				T*				tmpVector = this->_myVector;
 
 				this->_myAllocator = x._myAllocator;
 				this->_availableData = x._availableData;
 				this->_usedData = x._usedData;
-				this->_myIterator = x._myIterator;
-				this->_myIteratorEnd = x._myIteratorEnd;
+				this->_myIterator = x.begin();
+				this->_myIteratorEnd = x.end();
+				this->_myVector = x._myVector;
 
 				x._myAllocator = tmpMyAllocator;
 				x._availableData = tmpAvailableData;
 				x._usedData = tmpUsedData;
-
-				PRINT(*x.end())
 				x._myIterator = tmpBegin;
 				x._myIteratorEnd = tmpEnd;
-				PRINT(*x.end())
+				x._myVector = tmpVector;
 			}
 
 			void	clear() {
